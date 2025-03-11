@@ -1,0 +1,27 @@
+{
+  "experiment": "cremi",
+  "setup": "../../data/pretrained/train/p_setup51",
+  "iteration": 690000,
+  "raw_file": "../../data/cremi/groundtruth/cremiv01/raw/sample_A.hdf",
+  "raw_dataset": "volumes/raw",
+  "out_file": "../../predictions/cremiv01_sample_A.zarr",
+  "db_host": "",
+  "db_name": "",
+  "network_config": "train",
+  "overwrite": true,
+  "num_workers": 1,
+  "worker_config": {
+    "num_cache_workers": 5
+  },
+  "out_properties": {
+    "pred_syn_indicator_out": {
+      "dsname": "pred_syn_indicator",
+      "dtype": "uint8",
+      "scale": 255
+    },
+    "pred_partner_vectors": {
+      "dtype": "int8",
+      "scale": 0.25
+    }
+  }
+} 
