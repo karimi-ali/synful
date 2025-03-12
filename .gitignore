@@ -3,8 +3,11 @@
 .coverage
 *.egg-info
 data/
-# SLURM output logs
+
+# Prediction ouput folders
 scripts/predict/logs/
+scripts/predict/output/
+scripts/predict/.predict_blockwise/
 
 # build directory
 build/
