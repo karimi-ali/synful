@@ -8,3 +8,6 @@ scripts/predict/logs/
 
 # build directory
 build/
+
+# Pretrained models ignored
+scripts/train/p_setup*
