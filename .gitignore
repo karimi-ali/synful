@@ -5,3 +5,6 @@
 data/
 # SLURM output logs
 scripts/predict/logs/
+
+# build directory
+build/
