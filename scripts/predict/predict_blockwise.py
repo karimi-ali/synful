@@ -28,7 +28,7 @@ def predict_blockwise(
         worker_config=None,
         out_properties={},
         overwrite=False,
-        configname='test'):
+        configname='train'):
     '''Run prediction in parallel blocks. Within blocks, predict in chunks.
 
     Args:
@@ -39,27 +39,27 @@ def predict_blockwise(
 
         setup (``string``):
 
-            Name of the setup to predict.
+            Name of the setup to predict with.
 
         iteration (``int``):
 
-            Training iteration to predict from.
+            Training iteration to predict with.
 
         raw_file (``string``):
 
-            Input raw file for network to predict from.
+            Input raw file. Either .hdf, or N5/Zarr container.
 
         raw_dataset (``string``):
 
-            Datasetname of raw data.
+            Name of the raw dataset in the container.
 
         out_directory (``string``):
 
-            Output base directory.
+            Directory to save prediction into.
 
         out_filename (``string``):
 
-            File is written to <out_directory>/<setup>/<iteration>/<out_filename>
+            Name of the container to create.
 
         num_workers (``int``):
 
@@ -67,35 +67,27 @@ def predict_blockwise(
 
         db_host (``string``):
 
-            MongoDB host. This is used to monitor block completeness.
+            MongoDB host.
 
-        db_name (``db_name``):
+        db_name (``string``):
 
-            MongoDB name. A collection is created with `blocks_predicted` for
-            monitoring blocks.
+            MongoDB database name.
 
-        out_properties (``dic``, optional):
+        worker_config (``dict``, optional):
 
-            Use this to set properties for the output data. The dictionary
-            maps from tensorflow name to properties (all optional):
-            - dsname: sets the datasetname, if not provided, tensorflow name is used
-            - dtype: sets the dtype (make sure that you scale and clip
-            accordingly). If not provided, the dtype in config file is used.
-            - scale: scales the data and sets dataset attribute 'scale'
+            Worker configuration. Defaults to gpu_rtx queue, 2 cpus, 4 cache workers.
 
-        configname (``string``, optional):
+        out_properties (``dict``, optional):
 
-            Name of the configfile: Networksetups (such as input_size and
-            output_size) are loaded from file: <configname>_net_config.json.
-            This should be the same file that the predict script loads.
-            Train usually indicates a smaller network than test (test network
-            is written out for larger datasets/production).
+            Properties of the output dataset. Defaults to {}.
 
         overwrite (``bool``, optional):
 
-            If set to True, inference is started form scratch and log info
-            from `blocks_predicted` is ignored, database collection
-            `blocks_predicted` is overwritten.
+            Whether to overwrite existing predictions. Defaults to False.
+
+        configname (``string``, optional):
+
+            Name of the network config template to use. Defaults to 'train'.
 
     '''
 
@@ -268,7 +260,7 @@ def predict_worker(
         worker_config = {
             'queue': 'gpu_rtx',
             'num_cpus': 2,
-            'num_cache_workers': 4,
+            'num_cache_workers': 2,
         }
     else:
         with open(worker_config, 'r') as f:

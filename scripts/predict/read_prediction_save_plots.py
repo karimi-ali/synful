@@ -6,24 +6,6 @@ import matplotlib.pyplot as plt
 import os
 import h5py
 
-# Define paths
-zarr_path = '/raven/u/alik/code/synful/scripts/predict/output/p_setup51/690000/sample_C.zarr'
-raw_path = '/raven/u/alik/code/synful/data/cremi/groundtruth/cremiv01/raw/sample_C.hdf'
-output_dir = os.path.join(os.path.dirname(zarr_path), 'plots')
-os.makedirs(output_dir, exist_ok=True)
-
-# Open the zarr file
-f = zarr.open(zarr_path, 'r')
-
-# Open the raw data
-with h5py.File(raw_path, 'r') as raw_file:
-    raw_data = raw_file['volumes/raw'][:]
-
-# Print basic information about the file structure
-print("=== Zarr File Structure ===")
-print("Arrays:", list(f.keys()))
-print("Groups:", [k for k in f.group_keys()])
-
 def plot_vector_field(ax, vectors, stride=40, color='red'):
     """Plot vector field as arrows on the given axis."""
     h, w = vectors.shape[1:3]  # Get height and width from the vector field
@@ -112,29 +94,58 @@ def save_volume_plots(data, raw_slice, name, output_dir, z_index=None, partner_v
     for key, value in stats.items():
         print(f"{key}: {value:.4f}")
 
-# Process each volume
-if 'volumes' in f:
-    volumes = f['volumes']
-    print("\n=== Volumes Contents ===")
-    print("Available datasets:", list(volumes.keys()))
-    
-    # Get partner vectors if available
-    partner_vectors = volumes.get('pred_partner_vectors', None)
-    if partner_vectors is not None:
-        print(f"Partner vectors shape: {partner_vectors.shape}")  # Debug print
-    
-    for key in volumes.keys():
-        if key != 'pred_partner_vectors':  # Skip plotting vectors separately
-            data = volumes[key]
-            print(f"\nDataset: {key}")
-            print(f"Shape: {data.shape}")
-            print(f"Dtype: {data.dtype}")
-            print(f"Chunks: {data.chunks}")
-            
-            # Save plots for multiple slices
-            for z in [data.shape[0]//4, data.shape[0]//2, 3*data.shape[0]//4]:
-                raw_slice = raw_data[z]
-                save_volume_plots(data, raw_slice, key, output_dir, z, 
-                                partner_vectors[...] if partner_vectors is not None else None)
+# Define base paths
+BASE_DIR = "/u/alik/code/synful"
 
-print(f"\nPlots and statistics have been saved to: {os.path.abspath(output_dir)}") 
+# Process each bbox
+for bbox_num in range(1, 8):
+    exp_name = f'bbox{bbox_num}'
+    print(f"\nProcessing {exp_name}...")
+    
+    zarr_path = os.path.join(BASE_DIR, f'scripts/predict/output/p_setup51/690000/{exp_name}.zarr')
+    raw_path = os.path.join(BASE_DIR, f'data/fibsem/raw/{exp_name}.hdf')
+    output_dir = os.path.join(os.path.dirname(zarr_path), exp_name, 'plots')
+    os.makedirs(output_dir, exist_ok=True)
+
+    try:
+        # Open the zarr file
+        f = zarr.open(zarr_path, 'r')
+
+        # Open the raw data
+        with h5py.File(raw_path, 'r') as raw_file:
+            raw_data = raw_file['volumes/raw'][:]
+
+        # Print basic information about the file structure
+        print(f"\n=== {exp_name} Zarr File Structure ===")
+        print("Arrays:", list(f.keys()))
+        print("Groups:", [k for k in f.group_keys()])
+
+        # Process each volume
+        if 'volumes' in f:
+            volumes = f['volumes']
+            print("\n=== Volumes Contents ===")
+            print("Available datasets:", list(volumes.keys()))
+            
+            # Get partner vectors if available
+            partner_vectors = volumes.get('pred_partner_vectors', None)
+            if partner_vectors is not None:
+                print(f"Partner vectors shape: {partner_vectors.shape}")  # Debug print
+            
+            for key in volumes.keys():
+                if key != 'pred_partner_vectors':  # Skip plotting vectors separately
+                    data = volumes[key]
+                    print(f"\nDataset: {key}")
+                    print(f"Shape: {data.shape}")
+                    print(f"Dtype: {data.dtype}")
+                    print(f"Chunks: {data.chunks}")
+                    
+                    # Save plots for multiple slices
+                    for z in [data.shape[0]//4, data.shape[0]//2, 3*data.shape[0]//4]:
+                        raw_slice = raw_data[z]
+                        save_volume_plots(data, raw_slice, key, output_dir, z, 
+                                        partner_vectors[...] if partner_vectors is not None else None)
+
+        print(f"\nPlots and statistics have been saved to: {os.path.abspath(output_dir)}")
+
+    except Exception as e:
+        print(f"Error processing {exp_name}: {e}") 
