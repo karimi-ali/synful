@@ -329,7 +329,6 @@ def predict_worker(
 
 def check_block(blocks_predicted, block):
     done = blocks_predicted.count({'block_id': block.block_id}) >= 1
-
     return done
 
 

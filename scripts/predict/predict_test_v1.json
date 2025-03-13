@@ -6,7 +6,7 @@
   "raw_dataset" : "volumes/raw",
   "out_directory" : "output/",
   "out_filename": "sample_C.zarr",
-  "db_host": "localhost",
+  "db_host": "raven04",
   "db_name": "synful_p_setup52_390000",
   "configname": "train",
   "overwrite":true,
