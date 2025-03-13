@@ -20,4 +20,4 @@ source ~/.bashrc
 conda activate synful
 
 # Run the prediction script
-python predict_blockwise.py predict_test_v1.json
+python predict_blockwise.py predict_test_v2.json

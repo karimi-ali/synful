@@ -3,6 +3,8 @@
 .coverage
 *.egg-info
 data/
+# mongodb
+mongodb.log
 
 # Prediction ouput folders
 scripts/predict/logs/

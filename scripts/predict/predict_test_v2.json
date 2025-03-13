@@ -1,0 +1,25 @@
+{
+  "experiment": "cremi",
+  "setup" : "p_setup51",
+  "iteration" : 690000,
+  "raw_file" : "../../data/cremi/groundtruth/cremiv01/raw/sample_C.hdf",
+  "raw_dataset" : "volumes/raw",
+  "out_directory" : "output/",
+  "out_filename": "sample_C.zarr",
+  "db_host": "raven04",
+  "db_name": "synful_p_setup51_690000",
+  "configname": "train",
+  "overwrite": true,
+  "num_workers": 1,
+  "out_properties": {
+    "pred_syn_indicator_out": {
+      "dsname": "pred_syn_indicator",
+      "dtype": "uint8",
+      "scale": 255
+    },
+    "pred_partner_vectors": {
+      "dtype": "int8",
+      "scale": 0.25
+    }
+  }
+} 
